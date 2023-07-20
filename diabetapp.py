@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 # Başlık Ekleme
-st.title("Diabets Classification Project")
+st.title("Diyabet Testi")
 
 #Markdown oluşturma
 st.markdown("Merhaba! Bu web sitesi, diyabet olup olmadığınıza dair tahminde bulunmak için kullanılabilir. Lütfen yanda bulunan formu doldurarak bilgilerinizi girin, böylece size tahmin sonucunuzu gösterebiliriz.")
@@ -33,11 +33,11 @@ st.markdown("- **hba1c_level**: HbA1c (Hemoglobin A1c) seviyesi, bir kişinin so
 st.markdown("- **blood_glucose_level**: Kan şekeri seviyesi, belirli bir zamanda kan dolaşımındaki glikoz miktarını")
 
 
-st.sidebar.markdown("**Choose** the features below to see the result!")
+st.sidebar.markdown("**Test Sonucunu GÖrmek İçin Formu Eksiksiz Şekilde Doldurun!**")
 
 # Sidebarda Kullanıcıdan Girdileri Alma
-Ad = st.sidebar.text_input("Ad", help="Please capitalize the first letter of your name!")
-Soyad = st.sidebar.text_input("Soyad", help="Please capitalize the first letter of your surname!")
+Ad = st.sidebar.text_input("Ad")
+Soyad = st.sidebar.text_input("Soyad")
 Yaş = st.sidebar.number_input("Yaş", min_value=0,max_value=100)
 BMİ = st.sidebar.number_input("Vücut Kitle Endeksi", min_value=10.0,max_value=100.0,help="Vücut kitle endeksinizi bilmiyorsanız bu link üzerinden öğrenebilirsiniz: https://www.calculator.net/bmi-calculator.html")
 HbA1c = st.sidebar.number_input("HbA1c Seviyesi", min_value=3.5,max_value=9.0,help="Bu değer yapılan testlerin sonucundan elde edilir 3.5-9 arasında yer alır")
@@ -47,7 +47,7 @@ Kan_şekeri_seviyesi = st.sidebar.slider("Kan Şekeri Seviyesi", min_value=80, m
 import joblib
 from joblib import load
 
-model_xgboost_diabetes_model = joblib.load("model_xgboost_diabetes.pkl")
+web_model = joblib.load("web_model.pkl")
 
 
 
@@ -69,7 +69,7 @@ model_xgboost_diabetes_model = joblib.load("model_xgboost_diabetes.pkl")
 
 #pred = model_xgboost_diabetes_model.predict(input_df.values)
 
-import pickle
+#import pickle
 
 # Load the trained XGBoost model from the pkl file
 #with open("model_xgboost_diabetes.pkl", "rb") as f:
@@ -83,10 +83,45 @@ input_df = pd.DataFrame({
 })    
 
 # Now you can use the loaded model for predictions
-pred = model_xgboost_diabetes_model.predict(input_df)
-pred_probability = np.round(model_xgboost_diabetes_model.predict_proba(input_df), 2)
+pred = web_model.predict(input_df)
+pred_probability = np.round(web_model.predict_proba(input_df), 2)
 
+st.header("Sonuç")
 
+# Sonuç Ekranı
+if st.sidebar.button("Gönder"):
+
+    # Info mesajı oluşturma
+    st.info("Sonucunuzu aşağıda görebilirsiniz.")
+
+    # Sorgulama zamanına ilişkin bilgileri elde etme
+    from datetime import date, datetime
+
+    today = date.today()
+    time = datetime.now().strftime("%H:%M:%S")
+
+    # Sonuçları Görüntülemek için DataFrame
+    results_df = pd.DataFrame({
+    
+    'Tarih': [today],
+    'Saat': [time],
+    'Ad': [Ad],
+    'Soyad': [Soyad],
+    'Yaş': [Yaş],
+    'Vücut Kitle Endeksi': [BMİ],
+    'HbA1c Seviyesi': [HbA1c],
+    'Kan_şekeri_seviyesi': [Kan_şekeri_seviyesi],
+    'Prediction': [pred],
+    'Diyabet Olmama Olasılığınız': [pred_probability[:,:1]],
+    'Diyabet Olma Olasılığınız': [pred_probability[:,1:]]
+    })
+    results_df['Diyabet Olmama Olasılığınız'] = results_df['Diyabet Olmama Olasılığınız'].astype(float)
+    results_df['Diyabet Olma Olasılığınız'] = results_df['Diyabet Olma Olasılığınız'].astype(float)
+
+    results_df["Prediction"] = results_df["Prediction"].apply(lambda x: str(x).replace("0","Diyabet Değil"))
+    results_df["Prediction"] = results_df["Prediction"].apply(lambda x: str(x).replace("1","Diyabet"))
+
+    st.table(results_df)
 
 
 
