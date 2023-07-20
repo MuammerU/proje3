@@ -118,8 +118,8 @@ if st.sidebar.button("Gönder"):
     results_df['Diyabet Olmama Olasılığınız'] = results_df['Diyabet Olmama Olasılığınız'].astype(float)
     results_df['Diyabet Olma Olasılığınız'] = results_df['Diyabet Olma Olasılığınız'].astype(float)
 
-    results_df["Prediction"] = results_df["Prediction"].apply(lambda x: str(x).replace("0","Diyabet Değil"))
-    results_df["Prediction"] = results_df["Prediction"].apply(lambda x: str(x).replace("1","Diyabet"))
+    results_df["Prediction"] = results_df["Prediction"].apply(lambda x: str(x).replace("0","**Diyabet Değil**"))
+    results_df["Prediction"] = results_df["Prediction"].apply(lambda x: str(x).replace("1","**Diyabet**"))
 
     st.table(results_df)
 
