@@ -47,19 +47,46 @@ Kan_şekeri_seviyesi = st.sidebar.slider("Kan Şekeri Seviyesi", min_value=80, m
 import joblib
 from joblib import load
 
-model_xgboost_diabetes_model = joblib.load("C:\\Users\\muamm\\Downloads\\Muammer\\model_xgboost_diabetes.pkl")
+model_xgboost_diabetes_model = joblib.load("model_xgboost_diabetes.pkl")
+
+
+
+#from sklearn.preprocessing import OneHotEncoder
+#input_df = pd.get_dummies(input_df, columns = ["age"], prefix = ["age"],drop_first= True)
+
+
+#input_df = pd.get_dummies(input_df, columns = ["bmi"], prefix = ["bmi"],drop_first= True)
+
+
+
+
+#input_df = pd.get_dummies(input_df, columns = ["hba1c_level"], prefix = ["hba1c_level"],drop_first= True)
+
+
+
+#input_df = pd.get_dummies(input_df, columns = ["blood_glucose_level"], prefix = ["blood_glucose_level"],drop_first= True)
+
+
+#pred = model_xgboost_diabetes_model.predict(input_df.values)
+
+import pickle
+
+# Load the trained XGBoost model from the pkl file
+#with open("model_xgboost_diabetes.pkl", "rb") as f:
+    #model_xgboost_diabetes_model = pickle.load(f)
 
 input_df = pd.DataFrame({
     'age': [Yaş],
     'bmi': [BMİ],
     'hba1c_level': [HbA1c],
     'blood_glucose_level': [Kan_şekeri_seviyesi]
-})
+})    
+
+# Now you can use the loaded model for predictions
+pred = model_xgboost_diabetes_model.predict(input_df)
+pred_probability = np.round(model_xgboost_diabetes_model.predict_proba(input_df), 2)
 
 
-
-pred = model_xgboost_diabetes_model.predict(input_df.values)
-pred_probability = np.round(model_xgboost_diabetes_model.predict_proba(input_df.values), 2)
 
 
 
