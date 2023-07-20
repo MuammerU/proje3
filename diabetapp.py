@@ -86,7 +86,7 @@ input_df = pd.DataFrame({
 pred = web_model.predict(input_df)
 pred_probability = np.round(web_model.predict_proba(input_df), 2)
 
-st.header("Sonuç")
+st.header("**Sonuç**")
 
 # Sonuç Ekranı
 if st.sidebar.button("Gönder"):
